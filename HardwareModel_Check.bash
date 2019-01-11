@@ -1,61 +1,97 @@
 #!/usr/bin/env bash
 user_name=`id -un`
-args=$1
+args1=$1
+args2=$2
+mode="s"
 
+# m -- prints out message
+# e -- prints out error message and exits
+output() {
+    if [ "$mode" == "v" ]; then
+        if [ "$1" == "e" ]; then
+            echo " -- HardwareModel_Check: $2"
+            exit
+        elif [ "$1" == "m" ]; then
+            echo " -- HardwareModel_Check: $2"
+        elif [ "$mode" == "s" ]; then
+            : # Carry On.
+        else
+            echo " -- HardwareModel_Check: Unknown Mode: "
+        fi
+    fi
+}
+
+
+# Step -- 4
 HardwareModelCheck() {
-    echo " -- HardwareModel_Check: RUN"
+    output "m" "run"
     if [ -e "/Users/$user_name/Library/Logs/iPhone Updater Logs/iPhoneUpdater.log" ]; then
         grep "HardwareModel" /Users/$user_name/Library/Logs/iPhone\ Updater\ Logs/iPhoneUpdater* >> /Users/$user_name/HardwareModels/modelsFound.txt
         echo " ---- EOF" >> /Users/$user_name/HardwareModels/modelsFound.txt
-        echo " -- HardwareModel_Check: END"
+        output "m" "end"
     else
-        echo " -- HardwareModel_Check: ERROR (2)"
-        exit
+        output "e" "ERROR (2)"
     fi
 }
 
+
+# Step -- 3
 args_check() {
-if [ "$args" == "--open" ]; then
-    if [ -e /Users/$user_name/HardwareModels/modelsFound.txt ]; then
+    output "m" "start"
+    if [ "$args1" == "--open" ] || [ "$args2" == "--open" ]; then
+        if [ -e /Users/$user_name/HardwareModels/modelsFound.txt ]; then
+            HardwareModelCheck
+            open /Users/$user_name/HardwareModels/modelsFound.txt
+        else
+            output "m" "ERROR (0)"
+        fi
+    elif [ "$args1" == "--purge" ] || [ "$args2" == "--purge" ]; then
+        if [ -e /Users/$user_name/HardwareModels/modelsFound.txt ]; then
+            rm /Users/$user_name/HardwareModels/modelsFound.txt
+            output "m" "purge"
+        else
+            output "e" "ERROR (1)"
+        fi
+    elif [ "$args1" == "--help" ]; then
+            echo ":: find all models of iPhones that have been update on this machine"
+            echo ":: args:"
+            echo "  --open    --    open file after collecting models"
+            echo "  --purge   --    remove existing file"
+            echo "  --help    --    list of possible commands"
+            echo ":: error codes:"
+            echo "  error (0)     --    modelsFound.txt could not be opened"
+            echo "  error (1)     --    modelsFound.txt could not be removed"
+            echo "  error (2)     --    no iPhone update logs found"
+    else
         HardwareModelCheck
-        open /Users/$user_name/HardwareModels/modelsFound.txt
-    else
-        echo " -- HardwareModel_Check: ERROR (0)"
-        exit
     fi
-elif [ "$args" == "--purge" ]; then
-    if [ -e /Users/$user_name/HardwareModels/modelsFound.txt ]; then
-        rm /Users/$user_name/HardwareModels/modelsFound.txt
-        echo " -- HardwareModel_Check: PURGE"
+}
+
+
+# Step -- 2
+setup() {
+    if [ -d /Users/$user_name/HardwareModels ]; then
+        args_check
     else
-        echo " -- HardwareModel_Check: ERROR (1)"
-        exit
-    fi
-elif [ "$args" == "--help" ]; then
-        echo ":: find all models of iPhones that have been update on this machine"
-        echo ":: args:"
-        echo "  --open    --    open file after collecting models"
-        echo "  --purge   --    remove existing file"
-        echo "  --help    --    list of possible commands"
-        echo ":: error codes:"
-        echo "  error (0)     --    modelsFound.txt could not be opened"
-        echo "  error (1)     --    modelsFound.txt could not be removed"
-        echo "  error (2)     --    no iPhone update logs found"
-else
-    HardwareModelCheck
+        output "m" "HardwareModels directory created"
+        mkdir /Users/$user_name/HardwareModels
+        args_check
 fi
 }
 
-run() {
-    echo " -- HardwareModel_Check: START"
-    args_check
+
+# Step -- 1
+launch() {
+    if [ "$args1" == "--v" ] || [ "$args2" == "--v" ]; then
+        mode="v"
+        output "m" "mode: verbose"
+        setup
+    else
+        setup
+    fi
 }
 
-if [ -e /Users/$user_name/HardwareModels ]; then
-    run
-else
-    echo " -- HardwareModel_Check: HardwareModels Directory Created"
-    mkdir /Users/$user_name/HardwareModels
-    run
-fi
+
+# -- Start
+launch
 
