@@ -31,7 +31,7 @@ elif [ "$args" == "--purge" ]; then
         exit
     fi
 elif [ "$args" == "--help" ]; then
-        echo ":: find all models of iPhones that have been update on this machone"
+        echo ":: find all models of iPhones that have been update on this machine"
         echo ":: args:"
         echo "  --open    --    open file after collecting models"
         echo "  --purge   --    remove existing file"
