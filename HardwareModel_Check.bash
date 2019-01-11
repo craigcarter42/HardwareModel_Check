@@ -7,6 +7,7 @@ HardwareModelCheck() {
     if [ -e "/Users/$user_name/Library/Logs/iPhone Updater Logs/iPhoneUpdater.log" ]; then
         grep "HardwareModel" /Users/$user_name/Library/Logs/iPhone\ Updater\ Logs/iPhoneUpdater* >> /Users/$user_name/HardwareModels/modelsFound.txt
         echo " ---- EOF" >> /Users/$user_name/HardwareModels/modelsFound.txt
+        echo " -- HardwareModel_Check: END"
     else
         echo " -- HardwareModel_Check: ERROR (2)"
         exit
@@ -53,6 +54,7 @@ run() {
 if [ -e /Users/$user_name/HardwareModels ]; then
     run
 else
+    echo " -- HardwareModel_Check: HardwareModels Directory Created"
     mkdir /Users/$user_name/HardwareModels
     run
 fi
