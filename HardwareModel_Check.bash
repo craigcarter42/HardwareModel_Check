@@ -15,6 +15,9 @@ output() {
             echo " -- HardwareModel_Check: $2"
         elif [ "$mode" == "s" ]; then
             : # Carry On.
+        elif [ "$1" == "l" ]; then
+            echo ":: results"
+            echo "$2"
         else
             echo " -- HardwareModel_Check: Unknown Mode: "
         fi
@@ -26,8 +29,10 @@ output() {
 HardwareModelCheck() {
     output "m" "run"
     if [ -e "/Users/$user_name/Library/Logs/iPhone Updater Logs/iPhoneUpdater.log" ]; then
-        grep "HardwareModel" /Users/$user_name/Library/Logs/iPhone\ Updater\ Logs/iPhoneUpdater* >> /Users/$user_name/HardwareModels/modelsFound.txt
+        results=`grep -h " 'HardwareModel' returned \w*'" /Users/$user_name/Library/Logs/iPhone\ Updater\ Logs/iPhoneUpdater*`
+        echo "$results" >> /Users/$user_name/HardwareModels/modelsFound.txt
         echo " ---- EOF" >> /Users/$user_name/HardwareModels/modelsFound.txt
+        output "l" "$results"
         output "m" "end"
     else
         output "e" "ERROR (2)"
