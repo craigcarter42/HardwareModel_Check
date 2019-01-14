@@ -30,8 +30,8 @@ HardwareModelCheck() {
     output "m" "run"
     if [ -e "/Users/$user_name/Library/Logs/iPhone Updater Logs/iPhoneUpdater.log" ]; then
         results=`grep -h " 'HardwareModel' returned \w*'" /Users/$user_name/Library/Logs/iPhone\ Updater\ Logs/iPhoneUpdater*`
-        echo "$results" >> /Users/$user_name/HardwareModels/modelsFound.txt
-        echo " ---- EOF" >> /Users/$user_name/HardwareModels/modelsFound.txt
+        echo "$results" >> /Volumes/new-tools/modelsFound.txt
+        echo " ---- EOF" >> /Volumes/new-tools/modelsFound.txt
         output "l" "$results"
         output "m" "end"
     else
@@ -90,9 +90,9 @@ launch() {
     if [ "$args1" == "--v" ] || [ "$args2" == "--v" ]; then
         mode="v"
         output "m" "mode: verbose"
-        setup
+        args_check
     else
-        setup
+        args_check
     fi
 }
 
